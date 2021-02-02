@@ -33,17 +33,16 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 ```{r}
 #1. 
 ListByFourTo100 <- seq(1,100,4) #creates sequence and assign name
-ListByFourTo100 #shows values in console
 
 #2. 
-ListByFour_mean <- mean(ListByFourTo100) #assigns name to mean
-ListByFour_median <- median(ListByFourTo100) #assigns name to median
+ListByFour_mean <- mean(ListByFourTo100) #assigns name to calculated mean
+ListByFour_median <- median(ListByFourTo100) #assigns name to calculated median
 
-ListByFour_mean #shows mean value in console
-ListByFour_median #shows median value in console
+ListByFour_mean #shows mean in console
+ListByFour_median #shows median in console
 
 #3. 
-ListByFour_mean > ListByFour_median #gives FALSE output because they're equal
+ListByFour_mean > ListByFour_median #test if mean > median. FALSE output since both are 49
 
 ```
 
@@ -58,33 +57,43 @@ ListByFour_mean > ListByFour_median #gives FALSE output because they're equal
 8. Label the columns of your data frame with informative titles.
 
 ```{r}
-#5.
-StudentScores <- c("Abe"=85, "Bobbi"=93, "Carly"=82, "Dan"=45) #numeric vector
+#5. Create series of vectors
+Names <- c("Abe", "Bobbi", "Carly", "Dan") #character vector
+Scores <- c(85, 93, 82, 45) #numeric vector
+Passing <- c(TRUE, TRUE, TRUE, FALSE) #logical vector
 
-
-PassingGrade <- function(x){
-  passed <- x>49
-  return(list(passed))
-}
-PassingGrade(StudentScores)
+#6. see comments above for vector types, found with the class() function
 
 #7.
-df_StudentScores <- as.data.frame(StudentScores)
+df_StudentScores <- data.frame(Names,Scores,Passing)
+
+#8. see labels above in #5
 
 ```
 
 9. QUESTION: How is this data frame different from a matrix?
 
-> Answer: This data frame lists vectors of different modes, while a matrix requires all columns to have the same mode. 
+> Answer: This data frame lists vectors of different modes (character, numeric, & logical), while a matrix requires all columns to have the same mode. 
 
 10. Create a function with an if/else statement. Your function should determine whether a test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. Hint: Use `print`, not `return`. The name of your function should be informative.
 
+```{r}
+# Process with if and else separately
+PassingScore_if_else <- function(x){
+  if(x<50){print(FALSE)}
+  else{print(TRUE)}}
+
+# Process with ifelse together
+PassingScore_ifelse <- function(x){
+  ifelse(x<50,FALSE,TRUE)}
+
+```
 11. Apply your function to the vector with test scores that you created in number 5. 
 
 ```{r}
-
+PassingScore_ifelse(Scores)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: 
+> Answer: The 'ifelse' option worked with the test scores created above. When 'if' and 'else' were separated into two commands, it stated that only the first element could be used. However, 'ifelse' was able to apply the process to every term in the vector.
