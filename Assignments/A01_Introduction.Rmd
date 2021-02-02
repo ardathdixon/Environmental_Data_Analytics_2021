@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Ardath Dixon"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -22,21 +22,21 @@ The completed exercise is due on <>.
 
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I took Statistics fall 2019 where I used R for the first time. I did some statistical tests (ANOVA, etc.) and made graphs through R. I depended on TA & group mates' help for guidance with R coding. 
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: I feel confident with the basics of R coding, ArcGIS spatial coding analysis, GitHub, and statistical analysis. Meanwhile, I don't feel too knowledgeable in any of them, and hope this class can strengthen my confidence with them.
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: I'm a bit apprehensive about working to keep R codes and processes distinct in my head from Python codes & processes from a course my last semester. I also hope to not get too lost in computer coding details with complex systems.
 
 
 ## 2) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository  and that you have updated your course README file. 
 
-> Answer: 
+> Answer: https://github.com/ardathdixon/Environmental_Data_Analytics_2021
 
 
