@@ -37,22 +37,22 @@ vector2
 vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
 vector3
 
-vector1[3] # 
+vector1[3] # gives the 3rd item from vector1
 
 # Matrices ----
-matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
+matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # creates a matrix w 5 rows and 4 columns, listing values 1-20 vertically first to fill out the box
 matrix1
-matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
+matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) # also creates a matrix w 5 rows and 4 columns of values 1-20, but listing horizontally first
 matrix2
 matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma continues the line
                   dimnames = list(c("uno", "dos", "tres", "cuatro", "cinco"), 
-                                  c("un", "deux", "trois", "cat"))) #
+                                  c("un", "deux", "trois", "cat"))) #same as matrix2, but names the columns and rows with listed names
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] # shows the fourth row of matrix1
+matrix1[ , 3] # shows the third column of matrix1
+matrix1[c(12, 14)] # shows the 12th and 14th items
+matrix1[c(12:14)] # shows the items 12 to 14 (12th, 13th, and 14th items)
+matrix1[2:4, 1:3] # includes values 2-4 in the first column, and includes columns 1 to 3
 
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
@@ -66,14 +66,14 @@ list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3
 list1[[2]]
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+d <- c(1, 2, 3, 4) # What type of vector? numeric
+e <- c("red", "white", "red", NA) # What type of vector? character
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? logical
+dataframe1 <- data.frame(d,e,f) # consolidates the vectors into a dataframe
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # renames the dataframe columns
 
-dataframe1[1:2,] # 
-dataframe1[c("ID","Passed")] # 
+dataframe1[1:2,] # shows rows 1 and 2
+dataframe1[c("ID","Passed")] # shows only ID and Passed columns
 dataframe1$ID
 
 ```
@@ -93,24 +93,40 @@ Question: In the R chunk below, write "dataframe1$". Press `tab` after you type 
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r}
-
+Durham_high_F <- c(51,51,52,52,51,51,41,42,36,40)
+Durham_low_F <- c(40,29,33,28,35,33,26,22,20,22)
 ```
 
 Now, create two additional vectors that include the ten-day forecast for the high and low temperatures in Celsius. Use a function to create the two new vectors from your existing ones in Fahrenheit.
 
 ```{r}
+CelsiusToFahrenheit <- function(x){
+  convert <- (x-32)*.556
+  print(convert)
+}
+Durham_high_C <- CelsiusToFahrenheit(Durham_high_F)
+Durham_low_C <- CelsiusToFahrenheit(Durham_low_F)
 
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r}
-
+df_DurhamTemps <- data.frame(Durham_high_F,Durham_low_F,
+                             Durham_high_C,Durham_low_C)
+names(df_DurhamTemps) <- c("High Temp (F)","Low Temp (F)",
+                           "High Temp (C)","Low Temp (C)")
+View(df_DurhamTemps)
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r}
+summary(df_DurhamTemps) #can do summary statistics for the whole df
+sd(df_DurhamTemps$`High Temp (F)`) #need to do std dev one column at a time
+sd(df_DurhamTemps$`Low Temp (F)`)
+sd(df_DurhamTemps$`High Temp (C)`)
+sd(df_DurhamTemps$`Low Temp (C)`)
 
 ```
 
@@ -134,9 +150,9 @@ Remember formatting of dates in R:
 # (code must be uncommented)
 today <- Sys.Date()
 format(today, format = "%B")
-#format(today, format = "")
-#format(today, format = "")
-#format(today, format = "")
+format(today, format = "%d")
+format(today, format = "%Y")
+format(today, format = "%a")
 
 ```
 
@@ -159,7 +175,7 @@ date_obj_today
 
 #Ex2
 str_today <- "21-feb-3"
-#Sine the format is year-month-day we will use function ymd()
+#Since the format is year-month-day we will use function ymd()
 date_obj_today <- ymd(str_today)
 date_obj_today
 
