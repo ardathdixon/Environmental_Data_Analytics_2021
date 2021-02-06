@@ -71,14 +71,14 @@ library(dplyr)
 library(ggplot2)
 
 # Some packages are umbrellas under which other packages are loaded
-#install.packages("tidyverse")
+install.packages("tidyverse")
 library(tidyverse)
 
 ```
 
 Question: What happens in the console when you load a package?
 
-> Answer: 
+> Answer: The output will show in the Console. The Console reports what is being installed step by step. For an umbrella package like tidyverse, it will show all the packages included in the umbrella package.
 
 ### Import your datasets
 
@@ -100,12 +100,12 @@ Commons functions to import datasets and store as data frames are *read.table()*
 #read.csv("/Users/lmm89/OneDrive/Duke_University/7_Spring2021/ENV872_EDA/GitRepo_EDA_S2021/Environmental_Data_Analytics_2021/Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 
 # Relative file path (friendly for users regardless of machine)
-USGS.flow.data <- read.csv("../Data/Raw/USGS_Site02085000_Flow_Raw.csv")   
+USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")   
 #For knitting the .Rmd file you need to added an extra "." to the relative path
 # R Markdown documents are compiled in separate R sessions to enhance reproducibility, so you current R console has nothing to do with the compilation of the R Markdown documents.
 
 # What happens if we don't assign a name to our imported dataset?
-#read.csv("../Data/Raw/USGS_Site02085000_Flow_Raw.csv")
+# read.csv("../Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 
 # Another option is to choose with your browser
 # read.csv(file.choose())
@@ -119,7 +119,7 @@ USGS.flow.data <- read.csv("../Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 ## EXPLORE YOUR DATASET
 
 Take a moment to read through the README file associated with the USGS dataset on discharge at the Eno River. Where can you find this file? How does the placement and information found in this file relate to the best practices for reproducible data analysis?
-> ANSWER: 
+> ANSWER: The README file is in the folder Data > Metadata. Placing the data here makes it better organized if/when someone is examining multiple data sets. Using ./ enables those using other machines to follow the same path and fine the Metadata with the same script. The Metadata itself includes a link as to its source, so the user can follow it and download an updated version if applicable.
 
 ```{r exploredata}
 View(USGS.flow.data)
@@ -154,7 +154,7 @@ summary(USGS.flow.data)  #could point to column only with $
 ```
 
 What happened to blank cells in the spreadsheet when they were imported into R?
-> Answer: 
+> Answer: They were imported as NA or blank cells. The fact that two commas were next to each other without a value in between them told R that the cell was empty.THe commas separating each value (.csv doc) indicated to R which values belong in which cells. If the column was characters, R left the empty cell blank. If the column was numbers, R inserted NA into the cell.
 
 ## Adjusting Datasets
 
@@ -168,7 +168,7 @@ summary(USGS.flow.data$gage.height.mean)
 ```
 Question: What types of research questions might make it favorable to remove NAs from a dataset, and what types of research questions might make it favorable to retain NAs in the dataset?
 
-> Answer: 
+> Answer: If the missing observations are in the beginning or end of the dataset, then they can be smoothly removed without impacting analysis conclusions. However, for time-series analyses, removing NAs can impact the conclusions and skew the data (e.g. changes in water flow from daily measurements). NAs could be easily removed for data points that are not compared over time (e.g. geometric measurements of specific trees/animals/etc, qualitative data from survey respondants, etc.).
 
 ```{r removeNA}
 USGS.flow.data.complete <- na.omit(USGS.flow.data)
