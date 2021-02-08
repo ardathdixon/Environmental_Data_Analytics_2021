@@ -1,6 +1,6 @@
 ---
 title: "Assignment 3: Data Exploration"
-author: "Student Name"
+author: "Ardath Dixon"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -23,22 +23,26 @@ The completed exercise is due on <>.
 
 1. Check your working directory, load necessary packages (tidyverse), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. 
 ```{r,  message = FALSE}
-
+setwd("/Users/ardat/OneDrive/Documents/DataAnalytics/Environmental_Data_Analytics_2021/")
+getwd()
+library(tidyverse)
+Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
+Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv")
 ```
 
 ## Learn about your system
 
 2. The neonicotinoid dataset was collected from the Environmental Protection Agency's ECOTOX Knowledgebase, a database for ecotoxicology research. Neonicotinoids are a class of insecticides used widely in agriculture. The dataset that has been pulled includes all studies published on insects. Why might we be interested in the ecotoxicologoy of neonicotinoids on insects? Feel free to do a brief internet search if you feel you need more background information. 
 
-> Answer: 
+> Answer: We might be interested in the exotoxicology of neonicotinoids on insects to see if/how the chemicals used in agriculture affect organisms' health. It would be of interest to learn if these chemicals have repercussions on the overall insect population and therefore negative effects on the overall ecosystem. We also would be interested to see how these insecticides biologically impact the insects, and therefore if there is a potential danger that would translate to the agricultural crops and therefore to human health in their consumption.
 
 3. The Niwot Ridge litter and woody debris dataset was collected from the National Ecological Observatory Network, which collectively includes 81 aquatic and terrestrial sites across 20 ecoclimatic domains. 32 of these sites sample forest litter and woody debris, and we will focus on the Niwot Ridge long-term ecological research (LTER) station in Colorado. Why might we be interested in studying litter and woody debris that falls to the ground in forests? Feel free to do a brief internet search if you feel you need more background information. 
 
-> Answer: 
+> Answer: We would be interested to study the litter and woody debris in forests to assess what natural mechanisms influence trees' growth. Specifically, we would be interested to see what composes the litter, and if its presence has a positive influence on growth. This would be relevant for learning how to improve forest growth patterns, then seeing if there was a way to replicate the biological benefits of forest litter for human-influenced areas such as planted tree farms or reforestation efforts. 
 
 4. How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here: 
 
-> Answer: 
+> Answer: Litter and woody debris is sampled in the NEON network using litter traps. Elevated PVC litter traps are 0.5 square meter mesh baskets elevated about 80cm above the ground. Ground traps are also 0.5 square meters large. Sites are selected if they contain vegetation >2 meters tall and are located in a tower plot. Some forests have frequent sampling (e.g. every two weeks in deciduous forests during senescence) and others are more infrequent (e.g. once every 1-2 months for evergreens).
 *
 *
 *
@@ -50,31 +54,37 @@ The completed exercise is due on <>.
 5. What are the dimensions of the dataset?
 
 ```{r}
-
+dim(Neonics)
 ```
 
 6. Using the `summary` function on the "Effects" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 ```{r}
+#Effects = Neonics$Effect
+#summary(Neonics$Effect)
 
+unique(Neonics$Effect, fromLast = FALSE)
+## cannot seem to see how to count distinct values
 ```
 
-> Answer: 
+> Answer: Mortality and Growth are the most commonly studied effects. These are likely because alive or dead and size of the organism are easier to examine for most if not all samples. Meanwhile, characteristics such as biochemistry or enzymes require more in depth research done for a particular sample.
 
 7. Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.
 
 ```{r}
-
+species <- unique(Neonics$Species.Common.Name)
+head(species,7)
 ```
 
-> Answer: 
+> Answer: The six most commonly studied species are the Coffee Bean Weevil, the House Fly, the Fall Armyworm, the Parasitic Wasp (with both spellings), the Spiralling Whitefly, and the Mosquito. Therefore, the Parasitic Wasp is likely ranked higher, since it makes up two of the top five species.  
+#### Different species when scientific name... (same top 3)
 
 8. Concentrations are always a numeric value. What is the class of Conc.1..Author. in the dataset, and why is it not numeric?
 
 ```{r}
-
+class(Neonics$Conc.1..Author.)
 ```
 
-> Answer:
+> Answer: This class is character not numeric because there are some entries with "NR/" for not recorded, "~10" for approximately 10, and other values with / included in the cell. There are digits other than purely number values in that column of data, hence R's interpretation as a character variable.
 
 
 
@@ -82,7 +92,8 @@ The completed exercise is due on <>.
 
 9. Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year. 
 ```{r}
-
+geom_freqpoly(mapping = ngn)
+#geom_freqpoly(Neonics$Publication.Year) #ERROR
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
