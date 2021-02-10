@@ -114,7 +114,7 @@ class(NTL.phys.data$year4)
 
 # Exercise: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
+Tuesday1990s <- filter(NTL.phys.data, year4 %in% c(1990:1999))
 
 ```
 Question: Why don't we filter using row numbers?
