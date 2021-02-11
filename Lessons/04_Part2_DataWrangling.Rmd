@@ -106,7 +106,7 @@ NTL.nutrient.data.PeterPaul.spread2 <- pivot_wider(NTL.nutrient.data.PeterPaul.g
 # Split components of cells into multiple columns
 # Opposite of 'separate' is 'unite'
 NTL.nutrient.data.PeterPaul.dates <- separate(NTL.nutrient.data.PeterPaul.subset, sampledate, c("Y", "m", "d"))
-
+ 
 # I recommend using lubridate rather than separate and unite.
 
 ```
