@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Ardath Dixon"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -25,8 +25,31 @@ The completed exercise is due on Tuesday, Feb 16 @ 11:59pm.
 
 ```{r, message = FALSE}
 #1
+getwd()
+setwd("/Users/ardat/OneDrive/Documents/DataAnalytics/Environmental_Data_Analytics_2021/")
+
+#install.packages("tidyverse") ## run line if tidyverse is not yet installed on your machine
+#install.packages("lubridate") ## run line if lubridate is not yet installed on your machine
+library(tidyverse)
+library(lubridate)
+
+EPAair_O3_NC2018 <- read.csv('./Data/Raw/EPAair_O3_NC2018_raw.csv', stringsAsFactors = TRUE)
+EPAair_O3_NC2019 <- read.csv('./Data/Raw/EPAair_O3_NC2019_raw.csv', stringsAsFactors = TRUE)
+EPAair_PM25_NC2018 <- read.csv('./Data/Raw/EPAair_PM25_NC2018_raw.csv', stringsAsFactors = TRUE)
+EPAair_PM25_NC2019 <- read.csv('./Data/Raw/EPAair_PM25_NC2019_raw.csv', stringsAsFactors = TRUE)
 
 #2
+dim(EPAair_O3_NC2018)
+colnames(EPAair_O3_NC2018)
+
+dim(EPAair_O3_NC2019)
+colnames(EPAair_O3_NC2019)
+
+dim(EPAair_PM25_NC2018)
+colnames(EPAair_PM25_NC2018)
+
+dim(EPAair_PM25_NC2019)
+colnames(EPAair_PM25_NC2019)
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -36,13 +59,40 @@ The completed exercise is due on Tuesday, Feb 16 @ 11:59pm.
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
 ```{r}
-#3
+#3 Change date from character to date format
 
-#4
+## When datasets were imported without the 'stringsAsFactors' command above, the format commands below were not necessary. Once they were imported as Factors, the code produced error messages until the format commands were included.
 
-#5
+EPAair_O3_NC2018$Date <- format(EPAair_O3_NC2018$Date, format="%m/%d/%Y")
+EPAair_O3_NC2018$Date <- as_date(EPAair_O3_NC2018$Date, format="%m/%d/%Y")
 
-#6
+EPAair_O3_NC2019$Date <- format(EPAair_O3_NC2019$Date, format="%m/%d/%Y")
+EPAair_O3_NC2019$Date <- as_date(EPAair_O3_NC2019$Date, format="%m/%d/%Y")
+
+EPAair_PM25_NC2018$Date <- format(EPAair_PM25_NC2018$Date, format="%m/%d/%Y")
+EPAair_PM25_NC2018$Date <- as_date(EPAair_PM25_NC2018$Date, format="%m/%d/%Y")
+
+EPAair_PM25_NC2019$Date <- format(EPAair_PM25_NC2019$Date, format="%m/%d/%Y")
+EPAair_PM25_NC2019$Date <- as_date(EPAair_PM25_NC2019$Date, format="%m/%d/%Y")
+
+#4 Select certain columns
+
+Processed_EPAO3_NC2018 <- select(EPAair_O3_NC2018, Date, DAILY_AQI_VALUE:Site.Name, AQS_PARAMETER_DESC, COUNTY:SITE_LONGITUDE)
+Processed_EPAO3_NC2019 <- select(EPAair_O3_NC2019, Date, DAILY_AQI_VALUE:Site.Name, AQS_PARAMETER_DESC, COUNTY:SITE_LONGITUDE)
+Processed_PM25_NC2018 <- select(EPAair_PM25_NC2018, Date, DAILY_AQI_VALUE:Site.Name, AQS_PARAMETER_DESC, COUNTY:SITE_LONGITUDE)
+Processed_PM25_NC2019 <- select(EPAair_PM25_NC2019, Date, DAILY_AQI_VALUE:Site.Name, AQS_PARAMETER_DESC, COUNTY:SITE_LONGITUDE)
+
+#5 Fill in PM2.5 for all AQS_PARAMETER_DESC cells in the PM2.5 datasets
+
+Processed_PM25_NC2018 <- mutate(Processed_PM25_NC2018, AQS_PARAMETER_DESC = "PM2.5")
+Processed_PM25_NC2019 <- mutate(Processed_PM25_NC2019, AQS_PARAMETER_DESC = "PM2.5")
+
+#6 Save all processed datasets as .csv files
+
+write.csv(Processed_EPAO3_NC2018, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
+write.csv(Processed_EPAO3_NC2019, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
+write.csv(Processed_PM25_NC2018, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
+write.csv(Processed_PM25_NC2018, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
 
 ```
 
@@ -61,15 +111,34 @@ The completed exercise is due on Tuesday, Feb 16 @ 11:59pm.
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1718_Processed.csv"
 
 ```{r}
-#7
+#7 Combine the 4 datasets into 1
 
-#8
+EPAair_O3_PM25_NC201819 <- rbind(Processed_EPAO3_NC2018, Processed_EPAO3_NC2019, Processed_PM25_NC2018, Processed_PM25_NC2019)
 
-#9
+#8 Include specific sites, generate daily means, add month & year columns
 
-#10
+EPAair_O3_PM25_NC201819_commonsites <-
+  EPAair_O3_PM25_NC201819 %>%
+  filter(Site.Name == "Linville Falls" | Site.Name == "Durham Armory" | Site.Name == "Leggett" | Site.Name == "Hattie Avenue" | Site.Name == "Clemmons Middle" | Site.Name == "Mendenhall School" | Site.Name == "Frying Pan Mountain" | Site.Name == "West Johnston Co." | Site.Name == "Garinger High School" | Site.Name == "Castle Hayne" | Site.Name == "Pitt Agri. Center" | Site.Name == "Bryson City" | Site.Name == "Millbrook School") %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+  summarise(meanAQI = mean(DAILY_AQI_VALUE),
+            meanLat = mean(SITE_LATITUDE),
+            meanLong = mean(SITE_LONGITUDE)) %>%
+  mutate(Month = month(Date), Year = year(Date))
+  
+#9 Spread AQI values into two columns per site: ozone & PM2.5
 
-#11
+EPAair_O3_PM25_NC201819_tidy <-
+  EPAair_O3_PM25_NC201819_commonsites %>%
+  pivot_wider(names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
+
+#10 See dimensions
+
+dim(EPAair_O3_PM25_NC201819_tidy)
+
+#11 Save as a .csv -- instructions said 1718 but this data is 1819, so I changed the name accordingly
+
+write.csv(EPAair_O3_PM25_NC201819_tidy, row.names = FALSE, file = "./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 
 ```
 
@@ -82,12 +151,25 @@ The completed exercise is due on Tuesday, Feb 16 @ 11:59pm.
 ```{r}
 #12a
 
+EPAair_O3PM25_1819_Summary <-
+  EPAair_O3_PM25_NC201819_tidy %>%
+  group_by(Site.Name, Month, Year) %>%
+  summarise(meanAQI_ozone = mean(Ozone),
+            meanAQI_PM2.5 = mean(PM2.5))
+
 #12b
+
+EPAair_O3PM25_1819_dropna <- 
+  pivot_longer(EPAair_O3PM25_1819_Summary, meanAQI_ozone:meanAQI_PM2.5, 
+               names_to = "AQS_PARAMETER_DESC", values_to = "meanAQI")  %>%
+  group_by(Site.Name, Month, Year) %>%
+  drop_na(meanAQI)
 
 #13
 
+dim(EPAair_O3PM25_1819_dropna)
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: We used drop_na rather than na.omit because drop_na actually changes the dataframe. The other function (na.omit) only takes away the na values for that line of processing without making broader changes. 
