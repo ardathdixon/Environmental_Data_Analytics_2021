@@ -55,7 +55,7 @@ O3plot3 <- ggplot(EPAair) +
   theme_light()
 print(O3plot3)
 
-O3plot4 <- ggplot(EPAair) +
+ O3plot4 <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone)) +
   theme_classic()
 print(O3plot4)
@@ -169,13 +169,13 @@ NvsP <-
   geom_point() 
 print(NvsP)
 
-# let's first make the plot look better.
+ # let's first make the plot look better.
 # change your axis labels to reflect TN and TP in micrograms per liter.
 # change your legend labels
 NvsP2 <-
   ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth, shape = lakename)) +
   geom_point(alpha = 0.7, size = 2.5) +
-  #labs() + # change your legend labels here
+  labs(color="Depth", shape = "Lake name", x ="", y = "concentration (ug/l)") + # change your legend labels here
   scale_shape_manual(values = c(15, 17)) +
   #scale_color_distiller(palette = "Blues", direction = 1) + # use scale_color_brewer for discrete variables
   scale_color_viridis(option = "magma", direction = -1) +
@@ -187,6 +187,7 @@ print(NvsP2)
 # remove your x axis label
 # change labels for nutrients in the legend
 # try out the different color palette options and choose one (or edit)
+
 Nutrientplot <-
   ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration, color = nutrient)) +
   geom_boxplot() +
@@ -236,7 +237,13 @@ Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
 ggplot(Neonics) +
   geom_bar(aes(x = Endpoint))
 
+NeonicsPlot <- ggplot(Neonics) +
+  geom_bar(aes(x=Endpoint), fill = "red")+
+#  geom_bar(aes(x = Endpoint), fill="red", reorder(x, count, FUN=length)) + ##doesn't work
+  scale_x_discrete(limits = rev(levels(Neonics$Endpoint)))+
+  theme(axis.text.x = element_text(angle=45, hjust=1, size=9))
+print(NeonicsPlot)
 
-
+## not yet included how to reorder Endpoint
 
 ```
