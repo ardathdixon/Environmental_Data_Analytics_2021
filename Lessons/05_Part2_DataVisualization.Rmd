@@ -239,8 +239,9 @@ ggplot(Neonics) +
 
 NeonicsPlot <- ggplot(Neonics) +
   geom_bar(aes(x=Endpoint), fill = "red")+
-#  geom_bar(aes(x = Endpoint), fill="red", reorder(x, count, FUN=length)) + ##doesn't work
-  scale_x_discrete(limits = rev(levels(Neonics$Endpoint)))+
+  #geom_bar(aes(x = Endpoint), fill="red", reorder(x, count, FUN=length)) + ##doesn't work
+  #geom_bar(aes(x=reorder(Endpoint)),fill="red") +
+  #scale_x_discrete(limits = rev(levels(Neonics$Endpoint)))
   theme(axis.text.x = element_text(angle=45, hjust=1, size=9))
 print(NeonicsPlot)
 
