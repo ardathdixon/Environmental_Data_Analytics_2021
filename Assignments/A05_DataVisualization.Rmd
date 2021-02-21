@@ -67,13 +67,13 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 4. [NTL-LTER] Plot total phosphorus (`tp_ug`) by phosphate (`po4`), with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black. Adjust your axes to hide extreme values.
 
 ```{r}
-TPug_PO4_plot <- ggplot(Nutr_PeterPaul, aes(x=tp_ug, y=po4, color = lakename))+
+TPug_PO4_plot <- ggplot(Nutr_PeterPaul, aes(x=po4, y=tp_ug, color = lakename))+
   geom_point()+
   geom_smooth(method=lm, color = "black")+
-  theme_gray()+
-  xlim(0,150)+
-  ylim(0,45)+
-  labs(color = "Lake Name", x= "Total Phosphorous (ug)", y = "Phosphate (PO4)")
+  # theme is bw as specified above. otherwise, would include theme_bw()+
+  xlim(0,45)+
+  ylim(0,150)+
+  labs(color = "Lake Name", x = "Phosphate (PO4)",  y= "Total Phosphorous (ug)")
 print(TPug_PO4_plot)
 ```
 
@@ -122,7 +122,8 @@ Litter$collectDate <- as.Date(Litter$collectDate, format = "%Y-%m-%d")
 
 # Plot dry mass of needle litter by date, with NLCDs separated by colors
 Needles <- ggplot(subset(Litter, functionalGroup == "Needles"),
-                  aes(x=collectDate, y=dryMass, color=nlcdClass))+ 
+                  aes(x=collectDate, y=dryMass, color=nlcdClass))+
+  labs(x= "Collect Date", y="Dry Mass")+
   geom_point()
 print(Needles)
 
@@ -130,10 +131,11 @@ print(Needles)
 Needles_NLCD <- ggplot(subset(Litter, functionalGroup == "Needles"), 
                        aes(x=collectDate, y=dryMass))+
   facet_wrap(vars(nlcdClass))+
+  labs(x= "Collect Date", y= "Dry Mass")+
   geom_point()
 print(Needles_NLCD)
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer: I believe plot 7 is more effective, since it enables an easier comparison of needle mass changes over time, and of needle mass changes between land cover type. Plot 6 is a bit harder to read since both of those comparisons are combined into one visualization. Plot 6 emphasizes more the gaps in data collection months, which is not the intended purpose of the display.
+> Answer: I believe plot 7 is more effective, since it enables an easier comparison of needle mass changes over time, as well as of needle mass changes between land cover type. Plot 6 is a bit harder to read since both of those comparisons are combined into one visualization. Plot 6 instead emphasizes more the gaps in data collection months, which is not the intended purpose of the display.
