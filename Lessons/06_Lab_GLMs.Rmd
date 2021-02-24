@@ -66,7 +66,8 @@ Are Ozone levels below the threshold for "good" AQI index (0-50)?
 
 > Exercise 1: State the hypotheses for testing mean of AQI index.
 
-> Answer: 
+> Answer: Null hypothesis (Ho) is that ozone levels are > or = to 50 on the AQI index
+Alternative hypothesis (Ha) is that ozone layers are below the threshold for "good" AQI index (0-50). H0: mu >=50; Ha: mu < 50
 
 
 ```{r}
@@ -157,17 +158,23 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 
 Important components of the linear regression are the correlation and the R-squared value. The **correlation** is a number between -1 and 1, describing the relationship between the variables. Correlations close to -1 represent strong negative correlations, correlations close to zero represent weak correlations, and correlations close to 1 represent strong positive correlations. The **R-squared value** is the correlation squared, becoming a number between 0 and 1. The R-squared value describes the percent of variance accounted for by the explanatory variables. 
 
-For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
+For the EPA dataset, can we predict PM2.5 from Ozone?
 
 ```{r}
 
 #Exercise 3: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
 
+ozone.regression <- lm(data = EPAair, PM2.5 ~ Ozone)
+summary(ozone.regression)
 
 
 #Exercise 4: Build a scatterplot. Add a line and standard error for the linear regression. Add the regression equation to the plot
 
-
+ozone.regression.plot <- ggplot(EPAair, aes(x = Ozone, y=PM2.5))+
+  geom_point()+
+  geom_smooth(method=lm)+
+  geom_text(x = 100, y=80, label = "PM2.5 = 15.64 + 0.38*Ozone + 0.01")
+print(ozone.regression.plot)
 
 ```
 
@@ -180,15 +187,33 @@ What other variables can we add to improve model?
 
 #Exercise 5: Build correlation plots and identify more possible explanatory variables to add to the regression.
 
+library(corrplot)
+EPAair_subset <-
+  EPAair %>%
+  select(SITE_LATITUDE:PM2.5)%>%
+  na.omit()
 
+EPAair_subset_corr <- cor(EPAair_subset)
+corrplot(EPAair_subset_corr, method = "ellipse")
+corrplot.mixed(EPAair_subset_corr, upper = "ellipse")
 
+## Ozone and Site Latitude show the highest correlation to PM2.5 in the correlation plot display.
 
 #Exercise 6: Choose a model by AIC in a Stepwise Algorithm. Do the results from AIC match the variables you selected on Exercise 5?
 
+OzoneByAll_regression <- lm(data = EPAair_subset, PM2.5 ~ SITE_LATITUDE + SITE_LONGITUDE + Month + Year + Ozone)
 
+step(OzoneByAll_regression)
 
+## These results recommend including Site Longitude and Month, as well as Site Latitude and Ozone. Longitude and Month showed less influence, yet still resulted in lower AIC values. 
 
-#Exercise 7: Run another regression using the variables selected on Exercise 6. Compare r-squared value withthe one from Exercise 5. 
+#Exercise 7: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 5. 
+
+OzoneByAIG_regression <- lm(data = EPAair_subset, PM2.5 ~ Ozone + SITE_LATITUDE + Month + SITE_LONGITUDE)
+
+summary(OzoneByAIG_regression)
+
+## Rsquare improved to 0.19 with multiple linear regression, from Rsquare of 0.13 when simple linear regression.
 
 ```
 
