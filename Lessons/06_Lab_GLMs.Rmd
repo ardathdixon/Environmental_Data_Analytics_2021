@@ -67,11 +67,11 @@ Are Ozone levels below the threshold for "good" AQI index (0-50)?
 > Exercise 1: State the hypotheses for testing mean of AQI index.
 
 > Answer: Null hypothesis (Ho) is that ozone levels are > or = to 50 on the AQI index
-Alternative hypothesis (Ha) is that ozone layers are below the threshold for "good" AQI index (0-50). H0: mu >=50; Ha: mu < 50
+Alternative hypothesis (Ha) is that ozone layers are below the threshold for "good" AQI index (0-50). 
+H0: mu >=50; Ha: mu < 50
 
 
 ```{r}
-
 
 summary(EPAair$Ozone)
 EPAair.subsample <- sample_n(EPAair, 5000)
@@ -95,7 +95,7 @@ print(Ozone.plot)
 
 Write a sentence or two about the results of this test. Include both the results of the test and an interpretation that puts the findings in context of the research question.
 
-> 
+> This test supports the alternative hypothesis, that the true mean of ozone levels is less than 50 on the AQI. Since 50 is the threshold for "good" AQI index, this test suggests overall good ozone levels. This is shown with the one sample t-test, where the p-vale < 2.2e-16. Meanwhile, the Shapiro Test shows an abnormal distribution (P < 2.2e-16).
 
 ### Two-sample t-test
 
@@ -151,6 +151,34 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 ```{r}
 #Exercise 2:
 
+## first plot: geom_density of ozone divided by years
+
+EPAair$Year <- as.factor(EPAair$Year)
+
+OzoneDensity.Year.plot <- ggplot(EPAair, aes(x=Ozone, color = Year))+
+  geom_density(aes(fill = Year, alpha = 0.5))+
+  geom_vline(xintercept = 50, color = "#238b45", lty = 2, size = 0.9) +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = c(0, 0))+
+  labs(x = "Ozone (AQI Index Score)", y = "Density")
+print(OzoneDensity.Year.plot)
+
+## second plot: geom_boxplot of ozone divided by years
+
+OzoneYear.boxplot <- ggplot(EPAair, aes(x= Year, y= Ozone))+
+  geom_boxplot() #+
+#  stat_summary(geom = "text", fun = max, vjust = -1, size = 3.5, label =c("test1", "test2"))
+print(OzoneYear.boxplot)
+
+# "add letters representing a significant difference between 2018 and 2019" ?????
+
+## third plot: geom_violin of ozone divided by years
+OzoneYear.violin <- ggplot(EPAair, aes(x=Year, y = Ozone))+
+  geom_violin()+
+  stat_summary(fun=median, geom="crossbar")
+print(OzoneYear.violin)
+
+# needs letters like 2nd plot (?)
 
 ```
 
@@ -167,6 +195,8 @@ For the EPA dataset, can we predict PM2.5 from Ozone?
 ozone.regression <- lm(data = EPAair, PM2.5 ~ Ozone)
 summary(ozone.regression)
 
+## P-value < 2.2e-16, R-squared = 0.13
+## Yes, there is a significant positive correlation between PM2.5 and Ozone. 
 
 #Exercise 4: Build a scatterplot. Add a line and standard error for the linear regression. Add the regression equation to the plot
 
@@ -193,11 +223,14 @@ EPAair_subset <-
   select(SITE_LATITUDE:PM2.5)%>%
   na.omit()
 
+EPAair_subset$Year <- as.integer(EPAair_subset$Year)
+# fix from the change made above for graph displays
+
 EPAair_subset_corr <- cor(EPAair_subset)
 corrplot(EPAair_subset_corr, method = "ellipse")
 corrplot.mixed(EPAair_subset_corr, upper = "ellipse")
 
-## Ozone and Site Latitude show the highest correlation to PM2.5 in the correlation plot display.
+## Ozone and Site Latitude show the highest correlation to PM2.5 in the correlation plot display. These two variables could therefore be added to improve the model.
 
 #Exercise 6: Choose a model by AIC in a Stepwise Algorithm. Do the results from AIC match the variables you selected on Exercise 5?
 
@@ -205,11 +238,13 @@ OzoneByAll_regression <- lm(data = EPAair_subset, PM2.5 ~ SITE_LATITUDE + SITE_L
 
 step(OzoneByAll_regression)
 
-## These results recommend including Site Longitude and Month, as well as Site Latitude and Ozone. Longitude and Month showed less influence, yet still resulted in lower AIC values. 
+## These results recommend including Site Longitude and Month, as well as Site Latitude and Ozone. Longitude and Month showed lower influence levels, yet still correlated with lower AIC values. 
 
 #Exercise 7: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 5. 
 
-OzoneByAIG_regression <- lm(data = EPAair_subset, PM2.5 ~ Ozone + SITE_LATITUDE + Month + SITE_LONGITUDE)
+OzoneByAIG_regression <- 
+  lm(data = EPAair_subset, PM2.5 ~ Ozone + SITE_LATITUDE + 
+       Month + SITE_LONGITUDE)
 
 summary(OzoneByAIG_regression)
 
