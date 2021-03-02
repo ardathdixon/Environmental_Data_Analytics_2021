@@ -1,6 +1,6 @@
 ---
 title: "Assignment 7: GLMs (Linear Regressios, ANOVA, & t-tests)"
-author: "Student Name"
+author: "Ardath Dixon"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -27,10 +27,19 @@ The completed exercise is due on Tuesday, March 2 at 1:00 pm.
 
 ```{r setup}
 #1
+getwd() ## setwd() if need to change
 
+library(tidyverse)
+library(agricolae)
+
+NTL_chemphys <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+NTL_chemphys$sampledate <- as.Date(NTL_chemphys$sampledate, format = "%m/%d/%y")
 
 #2
+mytheme <- theme_bw(base_size = 10)+
+  theme(axis.text = element_text(color="black"))
 
+theme_set(mytheme)
 
 ```
 
@@ -39,8 +48,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: July lake temperatures from different depths have no variation.
+Ha: July lake temperatures from different depths have significant variation.
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -52,10 +61,22 @@ Ha:
 
 ```{r scatterplot}
 #4
+library(lubridate)
+NTLchemphys_month <- mutate(NTL_chemphys, month = month(sampledate))
 
-
+Julydepthtemp <- NTLchemphys_month %>%
+  filter(month == 7) %>%  
+  select(lakename:daynum, depth:temperature_C) %>%
+  drop_na()
+  
 #5
+Julytempdepth_scatter <- ggplot(Julydepthtemp, aes(x=depth, y=temperature_C))+
+  geom_point()+
+  ylim(0,35)+
+  geom_smooth(method=lm, color = "black")
+print(Julytempdepth_scatter)
 
+## make this plot look pretty and easy to read
 
 ```
 
@@ -69,7 +90,8 @@ Ha:
 
 ```{r linear.regression}
 #7
-
+Julydepthtemp.regression <- lm(data = Julydepthtemp, temperature_C~depth)
+summary(Julydepthtemp.regression)
 
 ```
 
@@ -92,10 +114,13 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 ```{r temperature.model}
 #9
 
-
+Julytempdepth_AIC <- lm(data = Julydepthtemp, temperature_C ~ depth + year4 + daynum)
+step(Julytempdepth_AIC)
 
 #10
 
+Julytempdepth_multreg <- lm(data = Julydepthtemp, temperature_C ~ depth + year4 + daynum)
+summary(Julytempdepth_multreg)
 
 ```
 
@@ -112,7 +137,7 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r anova.model}
 #12
-
+Julydepthtemp_ANOVA <- 
 
 ```
 
