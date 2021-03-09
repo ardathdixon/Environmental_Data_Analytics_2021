@@ -85,8 +85,8 @@ BRA_complete <- inner_join(Rainfall_BR_processed,Temp_BR_processed)
 summary(BRA_complete) ## NAs would show up in the summary (our small group's idea)
 
 BRA_complete <- BRA_complete %>%
-  na.approx(Temperature_C) %>%
-  na.approx(Rainfall) ## change NA cells to approximated values (discussed in large group)
+  mutate(na.approx(Temperature_C)) %>%
+  mutate(na.approx(Rainfall)) ## change NA cells to approximated values (discussed in large group)
 
 
 #Exercise 6: Plot both series over time on separate plots. Add a trend line using geom_smooth(). Can you say something about the trend just by visualizing the data?
