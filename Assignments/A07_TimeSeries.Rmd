@@ -1,6 +1,6 @@
 ---
 title: "Assignment 7: Time Series Analysis"
-author: "Student Name"
+author: "Ardath Dixon"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -31,6 +31,25 @@ The completed exercise is due on Tuesday, March 16 at 11:59 pm.
 
 ```{r, message = FALSE}
 #1
+getwd() ## checking working directory. setwd() if need to change
+
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(trend)
+
+## set ggplot theme
+mytheme <- theme_light(base_size = 12)+
+  theme(axis.text = element_text(color = "black"),
+        legendposition = "top")
+
+library(plyr) ## package to enable ldply function below
+
+## bulk import of ozone files & combine into 1 df
+GaringerOzoneFiles = list.files(path = "./Data/Raw/Ozone_TimeSeries/",
+                           pattern = "*.csv", full.names = TRUE)
+GaringerOzone <- GaringerOzoneFiles %>%
+  ldply(read.csv)
 
 ```
 
@@ -45,14 +64,21 @@ The completed exercise is due on Tuesday, March 16 at 11:59 pm.
 6. Use a `left_join` to combine the data frames. Specify the correct order of data frames within this function so that the final dimensions are 3652 rows and 3 columns. Call your combined data frame GaringerOzone. 
 
 ```{r}
-# 3
+# 3 set date column as date class
+GaringerOzone$Date <- as.Date(GaringerOzone$Date, format = "%m/%d/%Y")
 
-# 4
+# 4 wrangle dataset to only include 3 columns
+GaringerOzone <- select(GaringerOzone, Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
 
-# 5
+# 5 create df with all dates in the window
+startday = as.Date('2010-01-01', format = '%Y-%m-%d')
+endday = as.Date('2019-12-31', format = '%Y-%m-%d')
+
+Days <- as.data.frame(seq(from = startday, to = endday, by = 'day'))
+Days <- rename(Days, replace = c('seq(from = startday, to = endday, by = "day")' = "Date"))
 
 # 6
-
+GaringerOzone <- left_join(Days, GaringerOzone, by = c("Date"))
 
 ```
 
