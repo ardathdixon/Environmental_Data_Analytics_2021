@@ -269,12 +269,12 @@ mapview(state_sf)
 unique(huc8_sf$DWQ_Basin)
 
 #Summarize on DWQ Basin value
-DWQ_Basin_sf <- huc8_sf %>%
+huc2_sf <- huc8_sf %>% ### renamed from DWQ_Basin_sf to huc2_sf to match code below
   group_by(DWQ_Basin) %>%
   summarize(ACRES = sum(ACRES), SQ_MILES = sum(SQ_MILES))
 
 #Map the data
-mapview(DWQ_Basin_sf, zcol = 'ACRES')
+mapview(huc2_sf, zcol = 'ACRES')
 
 ```
 
@@ -344,8 +344,7 @@ myMap + mapview(neuse_counties_sf, alpha.regions = 0)
 
 #Update the area the features, now that some are clipped
 neuse_counties_sf <- neuse_counties_sf %>% 
-  mutate(Area_m2 = st_area(neuse_counties_sf$geometry)) %>% 
-  as.numeric()
+  mutate(Area_m2 = as.numeric(st_area(neuse_counties_sf$geometry)))
 mapview(neuse_counties_sf, zcol='Area_m2')
 
 ```
@@ -354,18 +353,19 @@ mapview(neuse_counties_sf, zcol='Area_m2')
 
 ```{r EXERCISE: Clipping}
 #Select the Triangle County from the 
+the_triangle <- counties_sf_utm %>%
+  filter(NAME %in% c("Chatham", "Durham", "Orange", "Wake"))
 
-
-
-  
 #Grab the intersecting HUC_8s
+the_hucs <- huc8_sf_utm[the_triangle,]
 
-
+mapview(the_hucs) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 
 #Intersect the HUC_8s
+the_huc_clip <- huc2_utm %>%
+  st_intersection(the_triangle)
 
-
-
+mapview(the_huc_clip) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 
 ```
 
@@ -451,8 +451,14 @@ mapView(counties_sf[resultMask,])
 
 ```{r Select counties within a 30 km area from the site}
 
+site_30km <- st_buffer(theSite_sfc_transformed, 30000)
+mapview(site_30km)
 
-
+resultMask_30km <- st_intersects(counties_sf_utm,
+                                 site_30km,
+                                 sparse = FALSE)
+selCounties_30km <- counties_sf_utm[resultMask_30km,]
+mapview(selCounties_30km)
                             
 ```
 
