@@ -103,19 +103,19 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-
+huc8_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 
 #Reveal the columns
-
+colnames(huc8_sf)
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Examine some records
-
+head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
-
+mapView(huc8_sf, zcol = "ACRES")
 
 ```
 
@@ -125,11 +125,13 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-
-
+huc8_UpperNeuse_sf <- st_read('./Data/Spatial/NCHUC8.shp') %>%
+  filter(SUBBASIN == "Upper Neuse")
 
 #Create a map
-
+mapView(huc8_sf, col.regions = "orange") + mapView(huc8_UpperNeuse_sf, col.regions = "purple")
+## another method -- both give the same output
+mapView(list(huc8_sf, huc8_UpperNeuse_sf), col.regions = list("orange", "purple"))
 
 ```
 
@@ -225,18 +227,22 @@ ggplot() +
 
 ```{r}
 #Compute HUC8 wind energy
-
-
+wind_energy_huc8 <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+                           colClasses = c('HUC_12' = 'factor')) %>%
+  mutate(HUC_8 = substr(HUC_12,1,8))%>%
+  group_by(HUC_8) %>%
+  summarize(kWhkm2day = sum(kWhkm2day))
 
 
 #Join to HUC_8 features
-
-
-
+huc8_wind_join <- merge(x = huc8_sf,
+                        y = wind_energy_huc8,
+                        by.x = "HUC_8",
+                        by.y = "HUC_8")
 
 #View the outputs
-
-
+mapview(huc8_wind_join,
+        zcol =  'kWhkm2day')
 
 ```
 
@@ -249,7 +255,7 @@ In our case, all of our county features share the same "STATEFP" value, so we'll
 ```{r Dissolve all counties into a single feature}
 #Aggregate the data using group_by and summarize, just as you would a non-spatial dataframe
 state_sf <- counties_sf %>% 
-  group_by('STATEFP') %>% 
+  group_by(STATEFP) %>% 
   summarize(ALAND = sum(ALAND))
 
 #View the data
@@ -260,17 +266,15 @@ mapview(state_sf)
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
-
-
-
+unique(huc8_sf$DWQ_Basin)
 
 #Summarize on DWQ Basin value
+DWQ_Basin_sf <- huc8_sf %>%
+  group_by(DWQ_Basin) %>%
+  summarize(ACRES = sum(ACRES), SQ_MILES = sum(SQ_MILES))
 
-
-
-
-  
 #Map the data
+mapview(DWQ_Basin_sf, zcol = 'ACRES')
 
 ```
 
