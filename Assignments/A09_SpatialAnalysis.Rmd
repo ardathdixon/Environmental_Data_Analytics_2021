@@ -64,7 +64,7 @@ mapview(NE_counties)
 
 6. What is the EPSG code of the Counties dataset? Is this a geographic or a projected coordinate reference system? (Or, does this CRS use angular or planar coordinate units?) To what datum is this CRS associated? (Tip: look the EPSG code on <https://spatialreference.org>) 
 
-> ANSWER: The ESPG code of the Counties dataset is 4269, standing for NAD83. This is a projected coordinate reference system, meaning it uses planar coordinate units. This is WGS84 datum as projected to focus on North America.
+> ANSWER: The ESPG code of the Counties dataset is 4269, standing for NAD83. This is a projected coordinate reference system, meaning it uses planar coordinate units. This is WGS84 datum as projected to focus on North America, hence "NAD" for North American Dataset.
 > 
 
 
@@ -78,15 +78,15 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
-
+GageLocations <- read.csv('./Data/Raw/NWIS_SiteInfo_NE_RAW.csv')
 
 #8. Reveal the names of the columns
-
+colnames(GageLocations)
 
 ```
 
 9. What columns in the dataset contain the x and y coordinate values, respectively?  
-> ANSWER:
+> ANSWER: In this dataset, dec_lat_va contains the latitude and therefore the y coordinate values. The dec_long_va column provides the longitude and therefore the x coordinate vaules. 
 > 
 
 
@@ -99,16 +99,16 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Convert dataframe to sf dataframe}
 #10. Convert to an sf object
-
+GageLocations_sf <- st_as_sf(GageLocations, coords = c('dec_long_va','dec_lat_va'), crs = 4269)
 
 #11. Re-examine the column names
-
+colnames(GageLocations_sf)
 
 ```
 
 12. What new field(s) appear in the sf dataframe created? What field(s), if any, disappeared?
 
->ANSWER: 
+>ANSWER: In creating the sf dataframe, the latitude and longitude fields were transformed into one new geometry field. Therefore, dec_lat_va and dec_long_va disappeared, and geometry was added as a new field. 
 >
 
 
@@ -121,7 +121,13 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
-
+ggplot()+
+  ggtitle("NWIS Gage Locations in Nebraska", sub = "Ardath Dixon")+
+  geom_sf(data = NE_counties, color = "brown")+
+  geom_sf(data = GageLocations_sf, color = "blue")+
+  theme_light()+
+  theme(plot.title = element_text(hjust = .5))+
+  theme(plot.subtitle = element_text(hjust = 1))
 
 ```
 
@@ -140,19 +146,20 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 
 ```{r}
 #14. Read the site flow data into a data frame
-
+SiteFlows <- read.csv('./Data/Raw/NWIS_SiteFlowData_NE_RAW.csv')
 
 #15. Show the column names
-
+colnames(SiteFlows)
 
 #16. Join location data to it
-
+SiteFlows_Location_join <- SiteFlows %>%
+  inner_join(GageLocations_sf, by = c("station_nm"))
 
 #17. Show the column names of the joined dataset
-
+colnames(SiteFlows_Location_join)
 
 #18. Show the dimensions of this joined dataset
-
+dim(SiteFlows_Location_join)
 
 ```
 
@@ -164,7 +171,7 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r}
 #Map the points, sized by gage height
-
+mapview(SiteFlows_Location_join)
 
 #ggplot
 
