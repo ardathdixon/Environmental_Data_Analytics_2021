@@ -1,11 +1,13 @@
 ---
-title: "Assignment 9: Spatial Analysis in R"
+title: 'Assignment 9: Spatial Analysis in R'
 author: "Ardath Dixon"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
-  markdown: 
+  markdown:
     wrap: 72
 ---
 
@@ -33,6 +35,7 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 getwd() ## setwd() if need to change
 
 #2. 
+remotes::install_github("r-spatial/mapview")
 library(tidyverse)
 library(sf)
 library(leaflet)
@@ -127,7 +130,7 @@ ggplot()+
   geom_sf(data = GageLocations_sf, color = "blue")+
   theme_light()+
   theme(plot.title = element_text(hjust = .5))+
-  theme(plot.subtitle = element_text(hjust = 1))
+  theme(plot.subtitle = element_text(hjust = .5))
 
 ```
 
@@ -152,8 +155,8 @@ SiteFlows <- read.csv('./Data/Raw/NWIS_SiteFlowData_NE_RAW.csv')
 colnames(SiteFlows)
 
 #16. Join location data to it
-SiteFlows_Location_join <- SiteFlows %>%
-  inner_join(GageLocations_sf, by = c("station_nm"))
+SiteFlows_Location_join <- GageLocations_sf %>%
+  inner_join(SiteFlows, by = c("station_nm"))
 
 #17. Show the column names of the joined dataset
 colnames(SiteFlows_Location_join)
@@ -171,10 +174,9 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r}
 #Map the points, sized by gage height
-mapview(SiteFlows_Location_join)
-
-#ggplot
-
+mapview(SiteFlows_Location_join, cex = "gage_ht", 
+        layer.name = c("Gage Heights")) + 
+  mapview(NE_counties, alpha.regions = 0, legend = FALSE)
 
 ```
 
@@ -192,10 +194,13 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 
 ```{r}
 #20 Transform the counties and gage location datasets to UTM Zone 14
-
+counties_sf_utm14 <- st_transform(NE_counties, crs = 32614)
+GageLocations_sf_utm14 <- st_transform(GageLocations_sf, crs = 32614)
 
 #21 Plot the data
-
+mapview(GageLocations_sf_utm14, 
+        layer.name = c("Site Numbers"), zcol = 'site_no') + 
+  mapview(counties_sf_utm14, alpha.regions = 0, legend = FALSE)
 
 ```
 
@@ -213,13 +218,17 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r}
 #22 Select the county
-
+LancasterCo <- counties_sf_utm14 %>%
+  filter(NAME == "Lancaster")
 
 #23 Select gages within the selected county
-
+LancasterGages <- GageLocations_sf_utm14[LancasterCo,]
 
 #24 Plot
-
-
+mapview(counties_sf_utm14, alpha.regions = 0, color = "brown",
+        layer.name = c("Nebraska County Boundaries"), col.regions = "brown") + 
+  mapview(LancasterCo, alpha.regions = 0, col.regions = "red", 
+          color = "red", lwd = 2, layer.name = c("Lancaster County")) + 
+  mapview(LancasterGages, col.regions = "steelblue", cex = 5)
 
 ```
