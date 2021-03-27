@@ -1,6 +1,6 @@
 ---
 title: "Assignment 10: Data Scraping"
-author: "Student Name"
+author: "Ardath Dixon"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -31,7 +31,15 @@ The completed exercise is due on Tuesday, April 6 at 11:59 pm.
 
 ```{r, message = FALSE}
 #1
+getwd() ## setwd() to change if needed
+library(tidyverse)
+library(rvest)
+library(lubridate)
+library(dplyr)
 
+mytheme <- theme_light(base_size = 12)+
+  theme(axis.text = element_text(color = "black"), legend.position = "top")
+theme_set(mytheme)
 
 ```
 
@@ -45,8 +53,9 @@ Indicate this website as the as the URL to be scraped.
 
 ```{r set.the.scraping.website}
 #2
-
-
+LWSP_Drhm2019_url <- 
+  "https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2019"
+LWSP_Drhm2019_website <- read_html(LWSP_Drhm2019_url)
 ```
 
 3. The data we want to collect are listed below:
@@ -62,8 +71,19 @@ Indicate this website as the as the URL to be scraped.
 In the code chunk below scrape these values into the supplied variable names.
 
 ```{r scrape.the.data}
-#3
+#3 Scrape data values for Water System Name, PSWID, & Ownership
 
+WaterSystem_Drhm <- LWSP_Drhm2019_website %>% 
+  html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
+
+PSWID_Drhm <- LWSP_Drhm2019_website %>% 
+  html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
+
+Ownership_Drhm <- LWSP_Drhm2019_website %>% 
+  html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
+
+MaxDayUse_monthly_Drhm <- LWSP_Drhm2019_website %>% 
+  html_nodes("th~ td+ td") %>% html_text()
 
 ```
 
@@ -75,13 +95,27 @@ In the code chunk below scrape these values into the supplied variable names.
 5. Plot the max daily withdrawals across the months for 2019.
 
 ```{r create.a.dataframe.from.scraped.data}
-#4
+#4 create dataframe from scraped data
+df_LWSP_Durham19 <- data.frame("Month" = c(1,5,9,2,6,10,3,7,11,4,8,12), 
+                         ## lists months in order of their display
+                         "Year" = rep(2019, 12),
+                         "WaterSystemName" = WaterSystem_Drhm,
+                         "PSWID" = PSWID_Drhm, "Ownership" = Ownership_Drhm,
+                         "MaxDayUse_mgd" = 
+                           as.numeric(MaxDayUse_monthly_Drhm)) %>%
+  mutate(GraphDate = my(paste(Month,"-",Year)))
+## reorder chronologically
+df_LWSP_Durham19 <- df_LWSP_Durham19[order(df_LWSP_Durham19$Month),] 
 
 
-
-#5
-
-
+#5 plot max daily withdrawals across 2019 months
+ggplot(df_LWSP_Durham19) + 
+  geom_point(aes(x = GraphDate, y = MaxDayUse_mgd))+
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = .5))+
+  ggtitle("Durham Water System")+
+  labs(x = "Date", y = "Max Daily Withdrawals (mgd)" )
 
 ```
 
@@ -89,7 +123,30 @@ In the code chunk below scrape these values into the supplied variable names.
 
 ```{r construct.a.scraping.function}
 #6.
+scrape.it <- function(the_PWISD, the_year){
+  NCwater_url <- 
+    paste0("https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=",
+           the_PWISD,"&year=",the_year)
+  NCwater_website <- read_html(NCwater_url)
+  
+  WaterSys_tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
+  Ownership_tag <- "div+ table tr:nth-child(2) td:nth-child(4)"
+  MaxDayUse_tag <-"th~ td+ td"
+  
+  water_system <- NCwater_website %>% html_nodes(WaterSys_tag) %>% html_text()
+  the_ownership <- NCwater_website %>% html_nodes(Ownership_tag) %>% html_text()
+  max_day_use <- NCwater_website %>% html_nodes(MaxDayUse_tag) %>% html_text()
+  
+  df_new <- data.frame("Month" = c(1,5,9,2,6,10,3,7,11,4,8,12),
+                       "Year" = rep(the_year, 12),
+                       "MaxDayUse_mgd" = as.numeric(max_day_use)) %>%
+    mutate(WaterSystemName = !!water_system,
+           Ownership = !!the_ownership,
+           GraphDate = my(paste(Month,"-",Year)))
+  df_new <- df_new[order(df_new$Month),] ## reordered chronologically
 
+  return(df_new)
+}
 
 
 ```
@@ -98,6 +155,15 @@ In the code chunk below scrape these values into the supplied variable names.
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7
+LWSP_df_1 <- scrape.it("03-32-010",2015) ## extract Durham 2015 data
+
+ggplot(LWSP_df_1) + 
+  geom_point(aes(x = GraphDate, y = MaxDayUse_mgd))+
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(x = "Date", y = "Max Daily Withdrawals (mgd)" )+
+  ggtitle(paste0(LWSP_df_1$WaterSystemName," Water System"))+
+  theme(plot.title = element_text(hjust = .5))
 
 
 ```
@@ -106,8 +172,19 @@ In the code chunk below scrape these values into the supplied variable names.
 
 ```{r fetch.and.plot.Durham.2015.data}
 #8
+LWSP_df_2 <- scrape.it("01-11-010",2015) ## extract Asheville 2015 data
+Combo_df_1_2 <- full_join(LWSP_df_1,LWSP_df_2)
 
-
+ComboGraph <- ggplot(Combo_df_1_2) + 
+  geom_point(aes(x = GraphDate, y = MaxDayUse_mgd, 
+                 color = WaterSystemName), size = 3)+
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(x = "Date", y = "Max Daily Withdrawals (mgd)", 
+       color = "Water System Name")+
+  ggtitle("Comparison of Water Withdrawals")+
+  theme(plot.title = element_text(hjust = .5))
+ComboGraph
 ```
 
 
@@ -115,8 +192,25 @@ In the code chunk below scrape these values into the supplied variable names.
 
 ```{r}
 #9
+the_years = rep(2010:2019)
+PWISD_number = "01-11-010"
 
+the_dfs <- map(the_years, scrape.it, the_PWISD = PWISD_number)
+the_df <- bind_rows(the_dfs)
+
+AshevilleGraph <- ggplot(the_df) + 
+  geom_point(aes(x = GraphDate, y = MaxDayUse_mgd))+
+  geom_smooth(aes(x = GraphDate, y = MaxDayUse_mgd), se=FALSE)+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
+  theme(axis.text.x = element_text(hjust = 1))+
+  labs(x = "Date", y = "Max Daily Withdrawals (mgd)")+
+  ggtitle("Monthly Max Water Withdrawals","for the Asheville Water System")+
+  theme(plot.title = element_text(hjust = .5), 
+        plot.subtitle = element_text(hjust = 0.5))
+AshevilleGraph
 
 ```
 
 >Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
+
+> In looking at the plot, Asheville appears to have a trend of increasing water usage over time. The trend line increases drastically from 2018 to 2020, showing an overall rise in maximum daily water withdrawals. 
