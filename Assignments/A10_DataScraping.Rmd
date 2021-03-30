@@ -71,12 +71,12 @@ LWSP_Drhm2019_website <- read_html(LWSP_Drhm2019_url)
 In the code chunk below scrape these values into the supplied variable names.
 
 ```{r scrape.the.data}
-#3 Scrape data values for Water System Name, PSWID, & Ownership
+#3 Scrape data values for Water System Name, PWSID, & Ownership
 
 WaterSystem_Drhm <- LWSP_Drhm2019_website %>% 
   html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
 
-PSWID_Drhm <- LWSP_Drhm2019_website %>% 
+PWSID_Drhm <- LWSP_Drhm2019_website %>% 
   html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
 
 Ownership_Drhm <- LWSP_Drhm2019_website %>% 
@@ -100,7 +100,8 @@ df_LWSP_Durham19 <- data.frame("Month" = c(1,5,9,2,6,10,3,7,11,4,8,12),
                          ## lists months in order of their display
                          "Year" = rep(2019, 12),
                          "WaterSystemName" = WaterSystem_Drhm,
-                         "PSWID" = PSWID_Drhm, "Ownership" = Ownership_Drhm,
+                         "PWSID" = PWSID_Drhm, 
+                         "Ownership" = Ownership_Drhm,
                          "MaxDayUse_mgd" = 
                            as.numeric(MaxDayUse_monthly_Drhm)) %>%
   mutate(GraphDate = my(paste(Month,"-",Year)))
@@ -125,8 +126,8 @@ ggplot(df_LWSP_Durham19) +
 #6.
 scrape.it <- function(the_PWISD, the_year){
   NCwater_url <- 
-    paste0("https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=",
-           the_PWISD,"&year=",the_year)
+    paste0("https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=",the_PWISD,
+           "&year=",the_year)
   NCwater_website <- read_html(NCwater_url)
   
   WaterSys_tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
@@ -144,7 +145,6 @@ scrape.it <- function(the_PWISD, the_year){
            Ownership = !!the_ownership,
            GraphDate = my(paste(Month,"-",Year)))
   df_new <- df_new[order(df_new$Month),] ## reordered chronologically
-
   return(df_new)
 }
 
@@ -155,7 +155,7 @@ scrape.it <- function(the_PWISD, the_year){
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7
-LWSP_df_1 <- scrape.it("03-32-010",2015) ## extract Durham 2015 data
+LWSP_df_1 <- scrape.it("03-32-010",2015) ## Durham's PWSID is 03-32-010
 
 ggplot(LWSP_df_1) + 
   geom_point(aes(x = GraphDate, y = MaxDayUse_mgd))+
@@ -170,7 +170,7 @@ ggplot(LWSP_df_1) +
 
 8. Use the function above to extract data for Asheville (PWSID = 01-11-010) in 2015. Combine this data with the Durham data collected above and create a plot that compares the Asheville to Durham's water withdrawals.
 
-```{r fetch.and.plot.Durham.2015.data}
+```{r fetch.and.plot.Asheville.2015.data}
 #8
 LWSP_df_2 <- scrape.it("01-11-010",2015) ## extract Asheville 2015 data
 Combo_df_1_2 <- full_join(LWSP_df_1,LWSP_df_2)
