@@ -74,6 +74,7 @@ See: <https://rmarkdown.rstudio.com> and class recording.
 
 Create a table below that details the example datasets we have been using in class. The first column should contain the names of the datasets and the second column should include some relevant information about the datasets. (Hint: use the cheat sheets to figure out how to make a table in Rmd)
 
+### dataset name + relevant dataset info (e.g. EPA air pollutants + provides measurements on ozone & PM concentrations) -- include 4 examples & that should be good
 
 ## R CHUNK EDITING CHALLENGE
 
@@ -81,7 +82,7 @@ Create a table below that details the example datasets we have been using in cla
 
 Create an R chunk below that installs the package `knitr`. Instead of commenting out the code, customize the chunk options such that the code is not evaluated (i.e., not run).
 
-```{r install.packages, eval=FALSE}
+```{r install.packages, eval=FALSE, include= FALSE}
 install.packages('knitr')
 ```
 
@@ -111,10 +112,6 @@ theme_set(mytheme)
 
 Nutr_raw <- read.csv("./Data/Raw/NTL-LTER_Lake_Nutrients_Raw.csv")
 
-## error reading the csv... not sure why?
-## says: Error in file(file, "rt") : cannot open the connection
-## but then worked when ran the whole chunk as one!
-
 head(Nutr_raw)
 Nutr_raw$sampledate <- as.Date(Nutr_raw$sampledate, format = "%m/%d/%y")
 
@@ -134,6 +131,7 @@ Nutr_filtered <- Nutr_raw %>%
     select(lakename:sampledate,depth:po4) %>%
     filter(depth == 0) %>%
     na.omit()
+
 ```
 
 Create a second R chunk to create a summary dataset with the mean, minimum, maximum, and standard deviation of total nitrogen concentrations for each lake. Create a second summary dataset that is identical except that it evaluates total phosphorus. Customize the chunk options such that the code is run but not displayed in the final document.
@@ -164,23 +162,20 @@ kable(Nutr_summary_tp, caption = "Total Phosphorous Concentrations by Lake")
 Create a fourth and fifth R chunk that generates two plots (one in each chunk): one for total N over time with different colors for each lake, and one with the same setup but for total P. Decide which geom option will be appropriate for your purpose, and select a color palette that is visually pleasing and accessible. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, customize the chunk options such that the figures are aligned on the left side of the page. Lastly, add a fig.cap chunk option to add a caption (title) to your plot that will display underneath the figure.
 
 ```{r}
-tn_time_display <- ggplot(Nutr_filtered, aes(x=sampledate, y=tn_ug, color= lakename))+
-    geom_point(size = 3)+
-    geom_smooth(size = .1, alpha = 0.1, se = FALSE)+ ## doesn't seem to change anything
-    labs(x = "Time", y = "Total Nitrogen Concentration (ug)", color = "Lake Name")
+tn_time_display <- ggplot(Nutr_filtered, (aes(x=sampledate, y=tn_ug)))+
+    geom_point()+
+    facet_wrap(vars(lakename), nrow = 4)+
+    labs(x = "Time", y = "Total Nitrogen Concentration (ug)")
 tn_time_display
 
+library(RColorBrewer)
 
-
-
-
-
-
-tn_time_display <- ggplot(Nutr_filtered, aes(x=sampledate, y=tn_ug, color = lakename))+
-    geom_point(size = 3, alpha = 0.5)+
+tn_time_display_colors <- ggplot(Nutr_filtered, aes(x=sampledate, y=tn_ug, color = lakename))+
     geom_line(size = .1)+
-    labs(x = "Time", y = "Total Nitrogen Concentration (ug)", color = "Lake Name")
-tn_time_display
+    labs(x = "Time", y = "Total Nitrogen Concentration (ug)", color = "Lake Name")+
+    scale_color_brewer(palette = "YlGnBu")
+tn_time_display_colors
+
 ```
 
 
@@ -188,6 +183,12 @@ tn_time_display
 
 Write a paragraph describing your findings from the R coding challenge above. This should be geared toward an educated audience but one that is not necessarily familiar with the dataset. Then insert a horizontal rule below the paragraph. Below the horizontal rule, write another paragraph describing the next steps you might take in analyzing this dataset. What questions might you be able to answer, and what analyses would you conduct to answer those questions?
 
+Text text, paragraph to include. Text text, paragraph to include.Text text, paragraph to include. Text text, paragraph to include. Text text, paragraph to include. Text text, paragraph to include. Text text, paragraph to include.
+
+
+*****
+
+Text again, let's see if it works.
 
 ## KNIT YOUR PDF
 When you have completed the above steps, try knitting your PDF to see if all of the formatting options you specified turned out as planned. This may take some troubleshooting.
