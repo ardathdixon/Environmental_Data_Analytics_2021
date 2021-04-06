@@ -1,11 +1,16 @@
 ---
 title: '11: Crafting Reports'
-author: Environmental Data Analytics | John Fay & Luana Lima | Developed by Kateri Salk
-date: "Spring 2021"
+author: Environmental Data Analytics | John Fay & Luana Lima | Developed by Kateri
+  Salk
+date: "Ardath Dixon | Spring 2021"
 output:
- pdf_document: default
+  pdf_document: default
+  word_document: default
+  toc: true
+  number_sections: true
+  citation_package: natbib
 editor_options:
- chunk_output_type: console
+  chunk_output_type: console
 ---
 
 ## LESSON OBJECTIVES
@@ -66,15 +71,35 @@ See: <https://rmarkdown.rstudio.com> and class recording.
 
 < Fill in our discussion below with bullet points. Use italics and bold for emphasis (hint: use the cheat sheets or `Help` →`Markdown Quick Reference` to figure out how to make bold and italic text). >
 
-* R Markdown is limited to ~~one language~~ **many languages**
-* Bullet point number two
-* testing...
+* R Markdown can read ~~only one language~~ **many languages**
+* R Markdown creates **clean** outputs with easy-to-read pdfs
+* It provides a way to *show or hide* certain code, as well as specifying *which chunks to run* every time.
+* R Markdown provides **formatting** for tables, figures, text, and code chunks.
 
 ## TEXT EDITING CHALLENGE
 
 Create a table below that details the example datasets we have been using in class. The first column should contain the names of the datasets and the second column should include some relevant information about the datasets. (Hint: use the cheat sheets to figure out how to make a table in Rmd)
 
-### dataset name + relevant dataset info (e.g. EPA air pollutants + provides measurements on ozone & PM concentrations) -- include 4 examples & that should be good
+```{r warning=FALSE}
+dataset_names <- c("EPAair_O3", "EPAair_PM25", "NIWO_Litter", "NTL-LTER_Lake")
+dataset_details <-c("EPA air quality monitoring data of ozone for North Carolina in 2018 or 2019",
+                    "EPA air quality monitoring data of PM2.5 for North Carolina in 2018 or 2019",
+                    "Niwot Ridge trap data for litter and small woody debris 2016-2019", 
+                    "Data from several lakes in the North Temperate Lakes district in WI, collected by the Long Term Ecological Research station")
+dataset_df <- data.frame(dataset_names, dataset_details)
+names(dataset_df) <- c("Names", "Details")
+
+library(knitr)
+library(kableExtra)
+
+
+dataset_table <- kable(dataset_df, caption = "Example datasets frequently used in class") %>%
+    column_spec(1,width = "1.5in") %>%
+    column_spec(2,width = "5in") %>%
+    kable_styling(latex_options = "striped")
+dataset_table
+
+```
 
 ## R CHUNK EDITING CHALLENGE
 
@@ -82,7 +107,7 @@ Create a table below that details the example datasets we have been using in cla
 
 Create an R chunk below that installs the package `knitr`. Instead of commenting out the code, customize the chunk options such that the code is not evaluated (i.e., not run).
 
-```{r install.packages, eval=FALSE, include= FALSE}
+```{r install.packages, eval=FALSE}
 install.packages('knitr')
 ```
 
@@ -106,7 +131,7 @@ library(knitr)
 
 opts_chunk$set(message = FALSE)
 
-mytheme <- theme_light(base_size = 12)+
+mytheme <- theme_light(base_size = 9)+
     theme(axis.text = element_text(color = "black"), legend.position = "top")
 theme_set(mytheme)
 
@@ -126,26 +151,27 @@ Create an R chunk below to create a processed dataset do the following operation
 -   Include only surface samples (depth = 0 m)
 -   Drop rows with missing data
 
-```{r}
+```{r processed dataset}
 Nutr_filtered <- Nutr_raw %>%
     select(lakename:sampledate,depth:po4) %>%
     filter(depth == 0) %>%
     na.omit()
-
 ```
 
 Create a second R chunk to create a summary dataset with the mean, minimum, maximum, and standard deviation of total nitrogen concentrations for each lake. Create a second summary dataset that is identical except that it evaluates total phosphorus. Customize the chunk options such that the code is run but not displayed in the final document.
 
-```{r summarize, include = FALSE}
+```{r summary dataset, include = FALSE}
 Nutr_summary_tn <- Nutr_filtered %>%
     group_by(lakename) %>%
     summarize(mean_tn_ug = mean(tn_ug),
+              min_tn_ug = min(tn_ug),
               max_tn_ug = max(tn_ug),
               stdev_tn_ug = sd(tn_ug))
 
 Nutr_summary_tp <- Nutr_filtered %>%
     group_by(lakename) %>%
     summarize(mean_tp_ug = mean(tp_ug),
+              min_tp_ug = min(tp_ug),
               max_tp_ug = max(tp_ug),
               stdev_tp_ug = sd(tp_ug))
 ```
@@ -161,34 +187,36 @@ kable(Nutr_summary_tp, caption = "Total Phosphorous Concentrations by Lake")
 
 Create a fourth and fifth R chunk that generates two plots (one in each chunk): one for total N over time with different colors for each lake, and one with the same setup but for total P. Decide which geom option will be appropriate for your purpose, and select a color palette that is visually pleasing and accessible. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, customize the chunk options such that the figures are aligned on the left side of the page. Lastly, add a fig.cap chunk option to add a caption (title) to your plot that will display underneath the figure.
 
-```{r}
-tn_time_display <- ggplot(Nutr_filtered, (aes(x=sampledate, y=tn_ug)))+
-    geom_point()+
-    facet_wrap(vars(lakename), nrow = 4)+
-    labs(x = "Time", y = "Total Nitrogen Concentration (ug)")
-tn_time_display
-
+```{r NitrogenGraph, echo= FALSE, fig.align = 'left', fig.width = 6, fig.cap = "Total Nitrogen Changes over Time by Lake"}
 library(RColorBrewer)
 
 tn_time_display_colors <- ggplot(Nutr_filtered, aes(x=sampledate, y=tn_ug, color = lakename))+
-    geom_line(size = .1)+
+    geom_line(size = 1)+
     labs(x = "Time", y = "Total Nitrogen Concentration (ug)", color = "Lake Name")+
-    scale_color_brewer(palette = "YlGnBu")
+    scale_color_brewer(palette = "Dark2")
 tn_time_display_colors
 
 ```
 
+```{r PhosphorousGraph, echo=FALSE, fig.align = 'left', fig.width = 6, fig.cap = "Total Phosphorous Changes over Time by Lake"}
+
+tp_time_display_colors <- ggplot(Nutr_filtered, aes(x=sampledate, y=tp_ug, color = lakename))+
+    geom_line(size = 1)+
+    labs(x = "Time", y = "Total Phosphorous Concentration (ug)", color = "Lake Name")+
+    scale_color_brewer(palette = "Dark2")
+tp_time_display_colors
+```
 
 ### Communicating results
 
 Write a paragraph describing your findings from the R coding challenge above. This should be geared toward an educated audience but one that is not necessarily familiar with the dataset. Then insert a horizontal rule below the paragraph. Below the horizontal rule, write another paragraph describing the next steps you might take in analyzing this dataset. What questions might you be able to answer, and what analyses would you conduct to answer those questions?
 
-Text text, paragraph to include. Text text, paragraph to include.Text text, paragraph to include. Text text, paragraph to include. Text text, paragraph to include. Text text, paragraph to include. Text text, paragraph to include.
 
+>The challenge above shows a small 1995 spike and a large 1997 spike for both Nitrogen and Phosphorous concentrations across several lakes. These data also suggest a general increase in Nitrogen and Phosphorous concentration over time, between 1991 and 1999. Paul Lake and Tuesday Lake remained near the low end of both N and P concentrations across time, while West Long Lake, East Long Lake, and Peter Lake showed relatively consistently higher concentrations. 
 
 *****
 
-Text again, let's see if it works.
+>Future analysis could look into other factors that shifted in 1997 such as weather events, regional development, or a shift in human activity. Likewise, future research could help suggest causes for differences between lakes such as lake size and surroundings. Regarding the existing data, statistical tests could be run to show significant deviations between years and between lakes. For example, the one-way ANOVA could compare Nitrogen concentrations across lakes.
 
 ## KNIT YOUR PDF
 When you have completed the above steps, try knitting your PDF to see if all of the formatting options you specified turned out as planned. This may take some troubleshooting.
