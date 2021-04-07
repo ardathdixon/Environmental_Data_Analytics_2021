@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.1.26)  6 APR 2021 19:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.1.26)  7 APR 2021 08:59
 entering extended mode
 **./11_CraftingReports.tex
 (11_CraftingReports.tex
@@ -490,7 +490,7 @@ File: l3backend-pdftex.def 2021-01-09 L3 backend support: PDF output (pdfTeX)
 \l__pdf_internal_box=\box68
 ) (11_CraftingReports.aux
 
-LaTeX Warning: Label `tab:tables' multiply defined.
+LaTeX Warning: Label `tab:N & P tables' multiply defined.
 
 )
 \openout1 = `11_CraftingReports.aux'.
@@ -666,69 +666,69 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 244.
 
-Overfull \hbox (24.39996pt too wide) in paragraph at lines 306--319
+Overfull \hbox (24.39996pt too wide) in paragraph at lines 285--298
  [][] 
  []
 
-[2pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
-as been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  
-l.331 \begin{Shaded}
-                    ]
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-333.
+312.
 ("C:\Program Files\MiKTeX\tex/latex/lm\ts1lmtt.fd"
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [3pdfTeX warning (ext4): destination with the same identifier (name{table.2})
+) [2pdfTeX warning (ext4): destination with the same identifier (name{table.1})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.456 
-      ]
-<11_CraftingReports_files/figure-latex/NitrogenGraph-1.pdf, id=68, 433.62pt x 3
-25.215pt>
-File: 11_CraftingReports_files/figure-latex/NitrogenGraph-1.pdf Graphic file (t
-ype pdf)
-<use 11_CraftingReports_files/figure-latex/NitrogenGraph-1.pdf>
-Package pdftex.def Info: 11_CraftingReports_files/figure-latex/NitrogenGraph-1.
-pdf  used on input line 459.
-(pdftex.def)             Requested size: 433.63878pt x 325.22908pt.
-<11_CraftingReports_files/figure-latex/PhosphorousGraph-1.pdf, id=69, 433.62pt 
-x 325.215pt>
-File: 11_CraftingReports_files/figure-latex/PhosphorousGraph-1.pdf Graphic file
- (type pdf)
-<use 11_CraftingReports_files/figure-latex/PhosphorousGraph-1.pdf>
-Package pdftex.def Info: 11_CraftingReports_files/figure-latex/PhosphorousGraph
--1.pdf  used on input line 466.
-(pdftex.def)             Requested size: 433.63878pt x 325.22908pt.
-[4pdfTeX warning (ext4): destination with the same identifier (name{table.3}) h
+l.341   I
+         nclude all columns except lakeid, depth\_id, and comments]
+<11_CraftingReports_files/figure-latex/Nitrogen graph-1.pdf, id=62, 397.485pt x
+ 289.08pt>
+File: 11_CraftingReports_files/figure-latex/Nitrogen graph-1.pdf Graphic file (
+type pdf)
+<use 11_CraftingReports_files/figure-latex/Nitrogen graph-1.pdf>
+Package pdftex.def Info: 11_CraftingReports_files/figure-latex/Nitrogen graph-1
+.pdf  used on input line 438.
+(pdftex.def)             Requested size: 397.49614pt x 289.0881pt.
+[3pdfTeX warning (ext4): destination with the same identifier (name{table.2}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.544 
-      ] [5pdfTeX warning (ext4): destination with the same identifier (name{fig
-ure.1}) has been already used, duplicate ignored
+l.442 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.3
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.544 
-       <./11_CraftingReports_files/figure-latex/NitrogenGraph-1.pdf>] [6pdfTeX 
-warning (ext4): destination with the same identifier (name{figure.2}) has been 
-already used, duplicate ignored
+l.442 
+      ]
+<11_CraftingReports_files/figure-latex/Phosphorous graph-1.pdf, id=70, 397.485p
+t x 289.08pt>
+File: 11_CraftingReports_files/figure-latex/Phosphorous graph-1.pdf Graphic fil
+e (type pdf)
+<use 11_CraftingReports_files/figure-latex/Phosphorous graph-1.pdf>
+Package pdftex.def Info: 11_CraftingReports_files/figure-latex/Phosphorous grap
+h-1.pdf  used on input line 445.
+(pdftex.def)             Requested size: 397.49614pt x 289.0881pt.
+[4pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) 
+has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.544 
-       <./11_CraftingReports_files/figure-latex/PhosphorousGraph-1.pdf>] [7] (1
-1_CraftingReports.aux)
+l.460 
+      pdfTeX warning (ext4): destination with the same identifier (name{figure.
+2}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  
+l.460 
+       <./11_CraftingReports_files/figure-latex/Nitrogen graph-1.pdf> <./11_Cra
+ftingReports_files/figure-latex/Phosphorous graph-1.pdf>] [5] (11_CraftingRepor
+ts.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 15138 strings out of 479618
- 222754 string characters out of 2874902
- 566550 words of memory out of 3000000
- 31880 multiletter control sequences out of 15000+200000
+ 15137 strings out of 479618
+ 222769 string characters out of 2874902
+ 565550 words of memory out of 3000000
+ 31881 multiletter control sequences out of 15000+200000
  451583 words of font info for 109 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  85i,11n,88p,623b,412s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -739,10 +739,10 @@ m Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/fonts/t
 ype1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr17.p
 fb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Program Files/
 MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on 11_CraftingReports.pdf (7 pages, 247272 bytes).
+Output written on 11_CraftingReports.pdf (5 pages, 242766 bytes).
 PDF statistics:
- 193 PDF objects out of 1000 (max. 8388607)
- 53 named destinations out of 1000 (max. 500000)
+ 183 PDF objects out of 1000 (max. 8388607)
+ 51 named destinations out of 1000 (max. 500000)
  26760 words of extra memory for PDF output out of 29859 (max. 10000000)
 
 

@@ -72,7 +72,7 @@ See: <https://rmarkdown.rstudio.com> and class recording.
 < Fill in our discussion below with bullet points. Use italics and bold for emphasis (hint: use the cheat sheets or `Help` →`Markdown Quick Reference` to figure out how to make bold and italic text). >
 
 * R Markdown can read ~~only one language~~ **many languages**
-* R Markdown creates **clean** outputs with easy-to-read pdfs
+* R Markdown creates **clean** outputs with easy-to-read pdfs, htmls, and other formats
 * It provides a way to *show or hide* certain code, as well as specifying *which chunks to run* every time.
 * R Markdown provides **formatting** for tables, figures, text, and code chunks.
 
@@ -80,7 +80,7 @@ See: <https://rmarkdown.rstudio.com> and class recording.
 
 Create a table below that details the example datasets we have been using in class. The first column should contain the names of the datasets and the second column should include some relevant information about the datasets. (Hint: use the cheat sheets to figure out how to make a table in Rmd)
 
-```{r warning=FALSE}
+```{r Data sources, echo = FALSE, warning=FALSE}
 dataset_names <- c("EPAair_O3", "EPAair_PM25", "NIWO_Litter", "NTL-LTER_Lake")
 dataset_details <-c("EPA air quality monitoring data of ozone for North Carolina in 2018 or 2019",
                     "EPA air quality monitoring data of PM2.5 for North Carolina in 2018 or 2019",
@@ -96,7 +96,7 @@ library(kableExtra)
 dataset_table <- kable(dataset_df, caption = "Example datasets frequently used in class") %>%
     column_spec(1,width = "1.5in") %>%
     column_spec(2,width = "5in") %>%
-    kable_styling(latex_options = "striped")
+    kable_styling(latex_options = "HOLD_position")
 dataset_table
 
 ```
@@ -120,7 +120,7 @@ Load the NTL-LTER_Lake_Nutrients_Raw dataset, display the head of the dataset, a
 
 Customize the chunk options such that the code is run but is not displayed in the final document.
 
-```{r setup, include = FALSE}
+```{r Setup, include = FALSE}
 getwd()
 setwd("C:/Users/ardat/OneDrive/Documents/DataAnalytics/Environmental_Data_Analytics_2021")
 getwd()
@@ -151,7 +151,7 @@ Create an R chunk below to create a processed dataset do the following operation
 -   Include only surface samples (depth = 0 m)
 -   Drop rows with missing data
 
-```{r processed dataset}
+```{r Processed dataset}
 Nutr_filtered <- Nutr_raw %>%
     select(lakename:sampledate,depth:po4) %>%
     filter(depth == 0) %>%
@@ -160,7 +160,7 @@ Nutr_filtered <- Nutr_raw %>%
 
 Create a second R chunk to create a summary dataset with the mean, minimum, maximum, and standard deviation of total nitrogen concentrations for each lake. Create a second summary dataset that is identical except that it evaluates total phosphorus. Customize the chunk options such that the code is run but not displayed in the final document.
 
-```{r summary dataset, include = FALSE}
+```{r Summary dataset, include = FALSE}
 Nutr_summary_tn <- Nutr_filtered %>%
     group_by(lakename) %>%
     summarize(mean_tn_ug = mean(tn_ug),
@@ -178,16 +178,20 @@ Nutr_summary_tp <- Nutr_filtered %>%
 
 Create a third R chunk that uses the function `kable` in the knitr package to display two tables: one for the summary dataframe for total N and one for the summary dataframe of total P. Use the `caption = " "` code within that function to title your tables. Customize the chunk options such that the final table is displayed but not the code used to generate the table.
 
-```{r tables, echo = FALSE}
+```{r N & P tables, echo = FALSE}
 
-kable(Nutr_summary_tn, caption = "Total Nitrogen Concentrations by Lake")
-kable(Nutr_summary_tp, caption = "Total Phosphorous Concentrations by Lake")
+N_table <- kable(Nutr_summary_tn, caption = "Total Nitrogen Concentrations by Lake") %>%
+    kable_styling(latex_options = "HOLD_position")
+N_table
 
+P_table <- kable(Nutr_summary_tp, caption = "Total Phosphorous Concentrations by Lake") %>%
+    kable_styling(latex_options = "HOLD_position")
+P_table
 ```
 
 Create a fourth and fifth R chunk that generates two plots (one in each chunk): one for total N over time with different colors for each lake, and one with the same setup but for total P. Decide which geom option will be appropriate for your purpose, and select a color palette that is visually pleasing and accessible. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, customize the chunk options such that the figures are aligned on the left side of the page. Lastly, add a fig.cap chunk option to add a caption (title) to your plot that will display underneath the figure.
 
-```{r NitrogenGraph, echo= FALSE, fig.align = 'left', fig.width = 6, fig.cap = "Total Nitrogen Changes over Time by Lake"}
+```{r Nitrogen graph, echo= FALSE, fig.align = 'left', fig.width = 5.5, fig.height = 4, fig.cap = "Total Nitrogen Changes over Time by Lake", fig.pos='H'}
 library(RColorBrewer)
 
 tn_time_display_colors <- ggplot(Nutr_filtered, aes(x=sampledate, y=tn_ug, color = lakename))+
@@ -198,7 +202,7 @@ tn_time_display_colors
 
 ```
 
-```{r PhosphorousGraph, echo=FALSE, fig.align = 'left', fig.width = 6, fig.cap = "Total Phosphorous Changes over Time by Lake"}
+```{r Phosphorous graph, echo=FALSE, fig.align = 'left', fig.width = 5.5, fig.height = 4, fig.cap = "Total Phosphorous Changes over Time by Lake", fig.pos='H'}
 
 tp_time_display_colors <- ggplot(Nutr_filtered, aes(x=sampledate, y=tp_ug, color = lakename))+
     geom_line(size = 1)+
@@ -212,11 +216,11 @@ tp_time_display_colors
 Write a paragraph describing your findings from the R coding challenge above. This should be geared toward an educated audience but one that is not necessarily familiar with the dataset. Then insert a horizontal rule below the paragraph. Below the horizontal rule, write another paragraph describing the next steps you might take in analyzing this dataset. What questions might you be able to answer, and what analyses would you conduct to answer those questions?
 
 
->The challenge above shows a small 1995 spike and a large 1997 spike for both Nitrogen and Phosphorous concentrations across several lakes. These data also suggest a general increase in Nitrogen and Phosphorous concentration over time, between 1991 and 1999. Paul Lake and Tuesday Lake remained near the low end of both N and P concentrations across time, while West Long Lake, East Long Lake, and Peter Lake showed relatively consistently higher concentrations. 
+>These graphs show changes over time in Nitrogen and Phosphorous concentrations across several lakes in the North Temperate Lakes district in Wisconsin, as collected by the Long Term Ecological Research Station. They show a small 1995 spike and a large 1997 spike for both Nitrogen and Phosphorous concentrations across several lakes. These data also suggest a general increase over time (between 1991-1999) in both Nitrogen and Phosphorous concentrations. Paul Lake and Tuesday Lake remained near the low end of both N and P concentrations across time, while West Long Lake, East Long Lake, and Peter Lake showed relatively consistently higher concentrations. 
 
 *****
 
->Future analysis could look into other factors that shifted in 1997 such as weather events, regional development, or a shift in human activity. Likewise, future research could help suggest causes for differences between lakes such as lake size and surroundings. Regarding the existing data, statistical tests could be run to show significant deviations between years and between lakes. For example, the one-way ANOVA could compare Nitrogen concentrations across lakes.
+>Future analysis could look into other factors that shifted in 1997 in seeking to explain the jump in Nitrogen and Phosphorous concentrations that year, such as weather events, regional development, or a shift in human activity. Likewise, future research could help suggest causes for differences between lakes, such as lake size and surroundings. Regarding the existing data, statistical tests could be run to show significant differences between years and between lakes. For example, the one-way ANOVA could compare Nitrogen or Phosphorous concentrations across lakes. Likewise, the simple linear regression could compare Nitrogen or Phosphorous concentrations with lake depths. 
 
 ## KNIT YOUR PDF
 When you have completed the above steps, try knitting your PDF to see if all of the formatting options you specified turned out as planned. This may take some troubleshooting.
